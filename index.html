@@ -9,9 +9,10 @@
     <!-- 캡처 라이브러리 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* 세련된 기본 테마 색상 */
+        /* 왼/른 각각의 기본 색상 설정 */
         :root {
-            --theme-color: #2b2d42; 
+            --left-color: #2b2d42; 
+            --right-color: #2b2d42; 
             --bg-color: #f4f6f8;
         }
 
@@ -29,16 +30,22 @@
         /* ---------------- MZ 감성 컨트롤 패널 ---------------- */
         .controls-panel {
             background: white;
-            padding: 20px 30px;
+            padding: 25px 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             margin-bottom: 40px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
+            flex-direction: column; /* 위아래로 배치 */
+            gap: 25px;
             align-items: center;
-            justify-content: center;
             z-index: 10;
+        }
+
+        .colors-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .color-picker-group {
@@ -47,12 +54,14 @@
             gap: 12px;
             font-weight: 600;
             color: #495057;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 100px;
         }
 
-        /* 동글동글 귀여운 색상 팔레트 */
         .color-swatch {
-            width: 36px; 
-            height: 36px;
+            width: 32px; 
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -70,7 +79,7 @@
         .custom-color-btn {
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
         .custom-color-btn input[type="color"] {
@@ -97,30 +106,23 @@
             transition: all 0.2s;
         }
         
-        /* 버튼 색상들 */
-        .btn-add {
-            background: #e9ecef;
-            color: #495057;
-        }
+        .btn-add { background: #e9ecef; color: #495057; }
         .btn-add:hover { background: #dee2e6; }
         
-        /* 새로 추가된 삭제 버튼 스타일 */
-        .btn-delete {
-            background: #ffe3e3;
-            color: #fa5252;
-        }
+        .btn-delete { background: #ffe3e3; color: #fa5252; }
         .btn-delete:hover { background: #ffc9c9; }
         
+        /* 저장 버튼은 자바스크립트로 그라데이션이 들어갈 예정! */
         .btn-save {
-            background: var(--theme-color);
             color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .btn-save:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
-        /* ---------------- 캡처 영역 (트위터 최적화) ---------------- */
+        /* ---------------- 캡처 영역 ---------------- */
         #capture-area {
             width: 1080px; 
             background-color: white;
@@ -131,7 +133,6 @@
             transition: all 0.3s;
         }
 
-        /* 캡처할 때 그림자 없애기 */
         .exporting-mode {
             box-shadow: none !important;
             border-radius: 0 !important;
@@ -142,7 +143,7 @@
             font-weight: 900;
             margin-bottom: 40px;
             text-align: center;
-            color: var(--theme-color);
+            color: #2b2d42; /* 제목은 깔끔하게 다크그레이 고정 */
             letter-spacing: -1px; 
         }
 
@@ -151,30 +152,46 @@
             gap: 40px;
         }
 
+        /* 각각의 표에 맞는 색상을 입히기 위한 변수 세팅 */
+        .left-table { --current-theme: var(--left-color); }
+        .right-table { --current-theme: var(--right-color); }
+
         .table-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            border: 3px solid var(--theme-color);
+            border: 3px solid var(--current-theme);
             border-radius: 20px; 
             overflow: hidden; 
         }
 
         .table-header {
-            background-color: var(--theme-color);
+            background-color: var(--current-theme);
             color: white;
             text-align: center;
             font-size: 36px;
             font-weight: 800;
             padding: 20px 0;
             letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* 攻め, 受け 한자 부분 스타일 */
+        .table-header .jp-text {
+            font-size: 22px;
+            font-weight: 600;
+            opacity: 0.85;
+            letter-spacing: 0;
         }
 
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2px; 
-            background-color: var(--theme-color);
+            background-color: var(--current-theme);
         }
 
         .grid-item {
@@ -198,34 +215,40 @@
             transition: color 0.2s;
         }
         
-        .grid-item:hover::before {
-            color: #adb5bd;
-        }
-
-        .grid-item.has-image::before {
-            display: none;
-        }
+        .grid-item:hover::before { color: #adb5bd; }
+        .grid-item.has-image::before { display: none; }
     </style>
 </head>
 <body>
 
     <!-- MZ 감성 컨트롤 패널 -->
     <div class="controls-panel">
-        <div class="color-picker-group">
-            <span>🎨 컬러 픽:</span>
-            <div class="color-swatch" style="background: #2b2d42;" onclick="changeThemeColor('#2b2d42')"></div>
-            <div class="color-swatch" style="background: #FF7722;" onclick="changeThemeColor('#FF7722')"></div>
-            <div class="color-swatch" style="background: #0077DD;" onclick="changeThemeColor('#0077DD')"></div>
-            <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
-                +
-                <input type="color" id="customColor" onchange="changeThemeColor(this.value)">
-            </label>
+        <div class="colors-container">
+            <!-- 왼 컬러 픽 -->
+            <div class="color-picker-group">
+                <span>🎨 왼 컬러:</span>
+                <div class="color-swatch" style="background: #2b2d42;" onclick="changeLeftColor('#2b2d42')"></div>
+                <div class="color-swatch" style="background: #0077DD;" onclick="changeLeftColor('#0077DD')"></div>
+                <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
+                    +<input type="color" onchange="changeLeftColor(this.value)">
+                </label>
+            </div>
+
+            <!-- 른 컬러 픽 -->
+            <div class="color-picker-group">
+                <span>🎨 른 컬러:</span>
+                <div class="color-swatch" style="background: #2b2d42;" onclick="changeRightColor('#2b2d42')"></div>
+                <div class="color-swatch" style="background: #FF7722;" onclick="changeRightColor('#FF7722')"></div>
+                <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
+                    +<input type="color" onchange="changeRightColor(this.value)">
+                </label>
+            </div>
         </div>
 
         <div class="btn-group">
             <button class="btn btn-add" onclick="addRow()">➕ 레이어 추가</button>
             <button class="btn btn-delete" onclick="deleteRow()">➖ 레이어 삭제</button>
-            <button class="btn btn-save" onclick="saveAsImage()">📸 예쁘게 저장하기</button>
+            <button class="btn btn-save" id="saveBtn" onclick="saveAsImage()">📸 예쁘게 저장하기</button>
         </div>
     </div>
 
@@ -235,24 +258,40 @@
         
         <div class="tables-container">
             <!-- 왼 표 -->
-            <div class="table-wrapper">
-                <div class="table-header">왼</div>
+            <div class="table-wrapper left-table">
+                <div class="table-header">왼 <span class="jp-text">(攻め)</span></div>
                 <div class="grid-container" id="left-grid"></div>
             </div>
             <!-- 른 표 -->
-            <div class="table-wrapper">
-                <div class="table-header">른</div>
+            <div class="table-wrapper right-table">
+                <div class="table-header">른 <span class="jp-text">(受け)</span></div>
                 <div class="grid-container" id="right-grid"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 테마 색상 변경 기능
-        function changeThemeColor(color) {
-            document.documentElement.style.setProperty('--theme-color', color);
-            document.querySelector('.btn-save').style.backgroundColor = color;
+        // 버튼 그라데이션 업데이트 함수
+        function updateSaveButtonColor() {
+            const leftColor = getComputedStyle(document.documentElement).getPropertyValue('--left-color').trim();
+            const rightColor = getComputedStyle(document.documentElement).getPropertyValue('--right-color').trim();
+            document.getElementById('saveBtn').style.background = `linear-gradient(135deg, ${leftColor} 0%, ${rightColor} 100%)`;
         }
+
+        // 왼 컬러 변경
+        function changeLeftColor(color) {
+            document.documentElement.style.setProperty('--left-color', color);
+            updateSaveButtonColor();
+        }
+
+        // 른 컬러 변경
+        function changeRightColor(color) {
+            document.documentElement.style.setProperty('--right-color', color);
+            updateSaveButtonColor();
+        }
+
+        // 초기 버튼 색상 세팅
+        updateSaveButtonColor();
 
         // 칸 만들기 기능
         function createCell() {
@@ -288,12 +327,11 @@
             for(let i=0; i<3; i++) rightGrid.appendChild(createCell());
         }
 
-        // 줄 삭제 기능 (새로 추가됨!)
+        // 줄 삭제 기능
         function deleteRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
             
-            // 칸이 3개 초과일 때만 (최소 1줄은 유지하게) 삭제 진행
             if (leftGrid.children.length > 3) {
                 for(let i=0; i<3; i++) {
                     leftGrid.removeChild(leftGrid.lastChild);
