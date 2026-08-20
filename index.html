@@ -9,7 +9,7 @@
     <!-- 캡처 라이브러리 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* 세련된 기본 테마 색상 (완전 쌩검정보다 살짝 부드러운 다크그레이) */
+        /* 세련된 기본 테마 색상 */
         :root {
             --theme-color: #2b2d42; 
             --bg-color: #f4f6f8;
@@ -96,11 +96,20 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        /* 버튼 색상들 */
         .btn-add {
             background: #e9ecef;
             color: #495057;
         }
         .btn-add:hover { background: #dee2e6; }
+        
+        /* 새로 추가된 삭제 버튼 스타일 */
+        .btn-delete {
+            background: #ffe3e3;
+            color: #fa5252;
+        }
+        .btn-delete:hover { background: #ffc9c9; }
         
         .btn-save {
             background: var(--theme-color);
@@ -117,12 +126,12 @@
             background-color: white;
             padding: 50px;
             box-sizing: border-box;
-            border-radius: 30px; /* 전체 테두리도 둥글게 */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06); /* 은은한 입체감 */
+            border-radius: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
             transition: all 0.3s;
         }
 
-        /* 캡처할 때 그림자를 없애주는 클래스 (깔끔한 이미지 저장을 위해) */
+        /* 캡처할 때 그림자 없애기 */
         .exporting-mode {
             box-shadow: none !important;
             border-radius: 0 !important;
@@ -134,7 +143,7 @@
             margin-bottom: 40px;
             text-align: center;
             color: var(--theme-color);
-            letter-spacing: -1px; /* 자간을 좁혀서 더 트렌디하게 */
+            letter-spacing: -1px; 
         }
 
         .tables-container {
@@ -147,8 +156,8 @@
             display: flex;
             flex-direction: column;
             border: 3px solid var(--theme-color);
-            border-radius: 20px; /* 표 모서리 둥글게 */
-            overflow: hidden; /* 둥근 모서리 안쪽 내용물 잘리게 */
+            border-radius: 20px; 
+            overflow: hidden; 
         }
 
         .table-header {
@@ -164,7 +173,7 @@
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2px; /* 얇고 세련된 안쪽 선 */
+            gap: 2px; 
             background-color: var(--theme-color);
         }
 
@@ -174,7 +183,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1 / 1; /* 완벽한 정사각형 */
+            aspect-ratio: 1 / 1; 
             position: relative;
             background-size: cover;
             background-position: center;
@@ -193,7 +202,6 @@
             color: #adb5bd;
         }
 
-        /* 이미지가 들어가면 + 기호 숨기기 */
         .grid-item.has-image::before {
             display: none;
         }
@@ -205,13 +213,9 @@
     <div class="controls-panel">
         <div class="color-picker-group">
             <span>🎨 컬러 픽:</span>
-            <!-- 기본 다크그레이 -->
             <div class="color-swatch" style="background: #2b2d42;" onclick="changeThemeColor('#2b2d42')"></div>
-            <!-- 요청하신 오렌지 -->
             <div class="color-swatch" style="background: #FF7722;" onclick="changeThemeColor('#FF7722')"></div>
-            <!-- 요청하신 블루 -->
             <div class="color-swatch" style="background: #0077DD;" onclick="changeThemeColor('#0077DD')"></div>
-            <!-- 자유 선택 (그라데이션 버튼) -->
             <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
                 +
                 <input type="color" id="customColor" onchange="changeThemeColor(this.value)">
@@ -220,6 +224,7 @@
 
         <div class="btn-group">
             <button class="btn btn-add" onclick="addRow()">➕ 레이어 추가</button>
+            <button class="btn btn-delete" onclick="deleteRow()">➖ 레이어 삭제</button>
             <button class="btn btn-save" onclick="saveAsImage()">📸 예쁘게 저장하기</button>
         </div>
     </div>
@@ -246,7 +251,6 @@
         // 테마 색상 변경 기능
         function changeThemeColor(color) {
             document.documentElement.style.setProperty('--theme-color', color);
-            // 저장 버튼 색상도 같이 바꿔주기
             document.querySelector('.btn-save').style.backgroundColor = color;
         }
 
@@ -255,7 +259,6 @@
             const cell = document.createElement('div');
             cell.className = 'grid-item';
             
-            // 칸 클릭 시 이미지 업로드
             cell.addEventListener('click', () => {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -266,7 +269,7 @@
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             cell.style.backgroundImage = `url(${event.target.result})`;
-                            cell.classList.add('has-image'); // 클래스 추가해서 + 기호 숨기기
+                            cell.classList.add('has-image'); 
                         };
                         reader.readAsDataURL(file);
                     }
@@ -285,6 +288,22 @@
             for(let i=0; i<3; i++) rightGrid.appendChild(createCell());
         }
 
+        // 줄 삭제 기능 (새로 추가됨!)
+        function deleteRow() {
+            const leftGrid = document.getElementById('left-grid');
+            const rightGrid = document.getElementById('right-grid');
+            
+            // 칸이 3개 초과일 때만 (최소 1줄은 유지하게) 삭제 진행
+            if (leftGrid.children.length > 3) {
+                for(let i=0; i<3; i++) {
+                    leftGrid.removeChild(leftGrid.lastChild);
+                    rightGrid.removeChild(rightGrid.lastChild);
+                }
+            } else {
+                alert("최소 1줄은 남겨두어야 해요! 😢");
+            }
+        }
+
         // 초기 세팅: 3줄 만들기
         for(let i=0; i<3; i++) {
             addRow();
@@ -294,21 +313,19 @@
         function saveAsImage() {
             const captureArea = document.getElementById('capture-area');
             
-            // 캡처 전에 임시로 배경 그림자와 둥근 모서리 제거 (깔끔한 사각형 저장을 위해)
             captureArea.classList.add('exporting-mode');
 
             setTimeout(() => {
                 html2canvas(captureArea, { 
-                    scale: 2, // 고해상도
+                    scale: 2, 
                     useCORS: true, 
-                    backgroundColor: "#ffffff" // 뒷배경 하얗게
+                    backgroundColor: "#ffffff" 
                 }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'CP_취향표_완성.png';
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
-                    // 저장 완료 후 다시 원래 UI로 복구
                     captureArea.classList.remove('exporting-mode');
                 });
             }, 100);
