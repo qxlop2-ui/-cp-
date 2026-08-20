@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CP 왼 른 취향표</title>
+    <!-- 이미지 저장을 위한 라이브러리 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        /* 캡처될 영역 (정확한 정사각형 800x800) */
+        #capture-area {
+            width: 800px;
+            height: 800px;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .tables-container {
+            display: flex;
+            gap: 20px;
+            flex: 1; /* 남은 공간을 모두 차지하게 해서 정사각형 유지 */
+        }
+        .table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 4px solid black;
+        }
+        .table-header {
+            background-color: black;
+            color: white;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            padding: 10px 0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3칸 */
+            grid-auto-rows: 1fr; /* 줄이 추가되어도 비율 유지 */
+            gap: 4px;
+            background-color: black; /* 테두리 효과 */
+            flex: 1;
+        }
+        .grid-item {
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+        .grid-item:hover {
+            background-color: #f9f9f9;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover { background-color: #555; }
+    </style>
+</head>
+<body>
+
+    <div id="capture-area">
+        <div class="header-title">
+            지금까지 좋아했던 CP의<br>
+            왼과 른을 나열하고 빠지기 쉬운 CP의 외모를 고찰하지 않으시겠습니까!<br>
+            <span style="font-size: 14px; font-weight: normal;">cp 왼 른 취향표 (클릭해서 이미지 삽입)</span>
+        </div>
+        
+        <div class="tables-container">
+            <!-- 왼 표 -->
+            <div class="table-wrapper">
+                <div class="table-header">왼</div>
+                <div class="grid-container" id="left-grid"></div>
+            </div>
+            <!-- 른 표 -->
+            <div class="table-wrapper">
+                <div class="table-header">른</div>
+                <div class="grid-container" id="right-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="addRow()">+ 한 줄(레이어) 추가하기</button>
+        <button onclick="saveAsImage()">이미지로 저장하기 (정사각형)</button>
+    </div>
+
+    <script>
+        // 초기 3x3 세팅 (3줄)
+        let rows = 0;
+        
+        function createCell() {
+            const cell = document.createElement('div');
+            cell.className = 'grid-item';
+            cell.innerText = "+";
+            
+            // 클릭 시 이미지 업로드 기능
+            cell.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            cell.style.backgroundImage = `url(${event.target.result})`;
+                            cell.innerText = ""; // 텍스트 지우기
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                input.click();
+            });
+            return cell;
+        }
+
+        function addRow() {
+            const leftGrid = document.getElementById('left-grid');
+            const rightGrid = document.getElementById('right-grid');
+            
+            // 왼쪽에 3칸, 오른쪽에 3칸 추가
+            for(let i=0; i<3; i++) leftGrid.appendChild(createCell());
+            for(let i=0; i<3; i++) rightGrid.appendChild(createCell());
+            rows++;
+        }
+
+        // 처음에 기본 3줄(3x3) 만들기
+        for(let i=0; i<3; i++) {
+            addRow();
+        }
+
+        // 이미지 저장 기능
+        function saveAsImage() {
+            const captureArea = document.getElementById('capture-area');
+            html2canvas(captureArea, { scale: 2 }).then(canvas => { // scale:2 로 고화질 저장
+                const link = document.createElement('a');
+                link.download = 'cp_preference.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
