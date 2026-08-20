@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CP 취향표 메이커</title>
-    <!-- 트렌디한 폰트: 프리텐다드 -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- 캡처 라이브러리 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* 왼/른 각각의 기본 색상 설정 (요청하신 색상으로 수정 완료!) */
+        /* 기본은 검정색으로 설정 */
         :root {
-            --left-color: #FF7722; 
-            --right-color: #0077DD; 
+            --left-color: #2b2d42; 
+            --right-color: #2b2d42; 
             --bg-color: #f4f6f8;
         }
 
@@ -27,7 +25,6 @@
             color: #333;
         }
 
-        /* ---------------- MZ 감성 컨트롤 패널 ---------------- */
         .controls-panel {
             background: white;
             padding: 25px 40px;
@@ -72,9 +69,7 @@
             position: relative;
             overflow: hidden;
         }
-        .color-swatch:hover {
-            transform: scale(1.15);
-        }
+        .color-swatch:hover { transform: scale(1.15); }
         
         .custom-color-btn {
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
@@ -90,10 +85,7 @@
             cursor: pointer;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 12px;
-        }
+        .btn-group { display: flex; gap: 12px; }
 
         .btn {
             padding: 14px 24px;
@@ -105,23 +97,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
         .btn-add { background: #e9ecef; color: #495057; }
-        .btn-add:hover { background: #dee2e6; }
-        
         .btn-delete { background: #ffe3e3; color: #fa5252; }
-        .btn-delete:hover { background: #ffc9c9; }
-        
-        .btn-save {
-            color: white;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
+        .btn-save { color: white; transition: transform 0.2s, box-shadow 0.2s; }
 
-        /* ---------------- 캡처 영역 ---------------- */
         #capture-area {
             width: 1080px; 
             background-color: white;
@@ -132,10 +111,7 @@
             transition: all 0.3s;
         }
 
-        .exporting-mode {
-            box-shadow: none !important;
-            border-radius: 0 !important;
-        }
+        .exporting-mode { box-shadow: none !important; border-radius: 0 !important; }
 
         .header-title {
             font-size: 44px;
@@ -146,10 +122,7 @@
             letter-spacing: -1px; 
         }
 
-        .tables-container {
-            display: flex;
-            gap: 40px;
-        }
+        .tables-container { display: flex; gap: 40px; }
 
         .left-table { --current-theme: var(--left-color); }
         .right-table { --current-theme: var(--right-color); }
@@ -177,12 +150,7 @@
             gap: 8px;
         }
         
-        .table-header .jp-text {
-            font-size: 22px;
-            font-weight: 600;
-            opacity: 0.85;
-            letter-spacing: 0;
-        }
+        .table-header .jp-text { font-size: 22px; font-weight: 600; opacity: 0.85; }
 
         .grid-container {
             display: grid;
@@ -209,10 +177,7 @@
             font-size: 32px;
             color: #ced4da;
             font-weight: 300;
-            transition: color 0.2s;
         }
-        
-        .grid-item:hover::before { color: #adb5bd; }
         .grid-item.has-image::before { display: none; }
     </style>
 </head>
@@ -220,24 +185,20 @@
 
     <div class="controls-panel">
         <div class="colors-container">
-            <!-- 왼 컬러 픽 -->
+            <!-- 왼 컬러 (기본 검정 + 주황 옵션) -->
             <div class="color-picker-group">
                 <span>🎨 왼 컬러:</span>
-                <div class="color-swatch" style="background: #FF7722;" onclick="changeLeftColor('#FF7722')"></div>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeLeftColor('#2b2d42')"></div>
-                <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
-                    +<input type="color" onchange="changeLeftColor(this.value)">
-                </label>
+                <div class="color-swatch" style="background: #FF7722;" onclick="changeLeftColor('#FF7722')"></div>
+                <label class="color-swatch custom-color-btn">+<input type="color" onchange="changeLeftColor(this.value)"></label>
             </div>
 
-            <!-- 른 컬러 픽 -->
+            <!-- 른 컬러 (기본 검정 + 파랑 옵션) -->
             <div class="color-picker-group">
                 <span>🎨 른 컬러:</span>
-                <div class="color-swatch" style="background: #0077DD;" onclick="changeRightColor('#0077DD')"></div>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeRightColor('#2b2d42')"></div>
-                <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
-                    +<input type="color" onchange="changeRightColor(this.value)">
-                </label>
+                <div class="color-swatch" style="background: #0077DD;" onclick="changeRightColor('#0077DD')"></div>
+                <label class="color-swatch custom-color-btn">+<input type="color" onchange="changeRightColor(this.value)"></label>
             </div>
         </div>
 
@@ -248,17 +209,13 @@
         </div>
     </div>
 
-    <!-- 이미지로 저장될 영역 -->
     <div id="capture-area">
         <div class="header-title">CP 왼 른 취향표</div>
-        
         <div class="tables-container">
-            <!-- 왼 표 -->
             <div class="table-wrapper left-table">
                 <div class="table-header">왼 <span class="jp-text">(攻め)</span></div>
                 <div class="grid-container" id="left-grid"></div>
             </div>
-            <!-- 른 표 -->
             <div class="table-wrapper right-table">
                 <div class="table-header">른 <span class="jp-text">(受け)</span></div>
                 <div class="grid-container" id="right-grid"></div>
@@ -267,20 +224,15 @@
     </div>
 
     <script>
-        // 버튼 그라데이션 업데이트
         function updateSaveButtonColor() {
             const leftColor = getComputedStyle(document.documentElement).getPropertyValue('--left-color').trim();
             const rightColor = getComputedStyle(document.documentElement).getPropertyValue('--right-color').trim();
             document.getElementById('saveBtn').style.background = `linear-gradient(135deg, ${leftColor} 0%, ${rightColor} 100%)`;
         }
-
-        // 왼 컬러 변경
         function changeLeftColor(color) {
             document.documentElement.style.setProperty('--left-color', color);
             updateSaveButtonColor();
         }
-
-        // 른 컬러 변경
         function changeRightColor(color) {
             document.documentElement.style.setProperty('--right-color', color);
             updateSaveButtonColor();
@@ -291,7 +243,6 @@
         function createCell() {
             const cell = document.createElement('div');
             cell.className = 'grid-item';
-            
             cell.addEventListener('click', () => {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -315,15 +266,15 @@
         function addRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
-            
-            for(let i=0; i<3; i++) leftGrid.appendChild(createCell());
-            for(let i=0; i<3; i++) rightGrid.appendChild(createCell());
+            for(let i=0; i<3; i++) {
+                leftGrid.appendChild(createCell());
+                rightGrid.appendChild(createCell());
+            }
         }
 
         function deleteRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
-            
             if (leftGrid.children.length > 3) {
                 for(let i=0; i<3; i++) {
                     leftGrid.removeChild(leftGrid.lastChild);
@@ -334,27 +285,17 @@
             }
         }
 
-        // 기본 3x3
-        for(let i=0; i<3; i++) {
-            addRow();
-        }
+        for(let i=0; i<3; i++) addRow();
 
         function saveAsImage() {
             const captureArea = document.getElementById('capture-area');
-            
             captureArea.classList.add('exporting-mode');
-
             setTimeout(() => {
-                html2canvas(captureArea, { 
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: "#ffffff" 
-                }).then(canvas => {
+                html2canvas(captureArea, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'CP_취향표_완성.png';
                     link.href = canvas.toDataURL('image/png');
                     link.click();
-                    
                     captureArea.classList.remove('exporting-mode');
                 });
             }, 100);
