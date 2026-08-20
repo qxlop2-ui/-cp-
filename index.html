@@ -10,12 +10,11 @@
     <!-- 이미지 저장용 라이브러리 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
-    <!-- ★ 새롭게 추가된 크롭(이미지 자르기) 라이브러리 ★ -->
+    <!-- 크롭(이미지 자르기) 라이브러리 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <style>
-        /* 기본은 깔끔한 다크그레이로 설정 */
         :root {
             --left-color: #2b2d42; 
             --right-color: #2b2d42; 
@@ -118,6 +117,7 @@
             border-radius: 30px; 
             box-shadow: 0 20px 40px rgba(0,0,0,0.06);
             transition: all 0.3s;
+            position: relative; /* 이스터 에그 위치 기준점! */
         }
 
         .exporting-mode { box-shadow: none !important; border-radius: 0 !important; }
@@ -189,7 +189,21 @@
         }
         .grid-item.has-image::before { display: none; }
 
-        /* ★ 이미지 크롭 팝업(모달) 예쁘게 꾸미기 ★ */
+        /* ★ 이스터 에그 스타일! ★ */
+        .easter-egg {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 12px;
+            color: #ced4da; /* 아주아주 연한 회색 */
+            opacity: 0.8; /* 요청하신 투명도 80% */
+            pointer-events: none; /* 클릭 방해 안 되게 */
+            user-select: none; /* 드래그도 안 되게 */
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* 크롭 팝업(모달) 꾸미기 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -249,7 +263,7 @@
 
     <div class="controls-panel">
         <div class="colors-container">
-            <!-- 왼 컬러 (기본 검정 + 주황 옵션) -->
+            <!-- 왼 컬러 -->
             <div class="color-picker-group">
                 <span>🎨 왼 컬러:</span>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeLeftColor('#2b2d42')"></div>
@@ -257,7 +271,7 @@
                 <label class="color-swatch custom-color-btn">+<input type="color" onchange="changeLeftColor(this.value)"></label>
             </div>
 
-            <!-- 른 컬러 (기본 검정 + 파랑 옵션) -->
+            <!-- 른 컬러 -->
             <div class="color-picker-group">
                 <span>🎨 른 컬러:</span>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeRightColor('#2b2d42')"></div>
@@ -273,6 +287,7 @@
         </div>
     </div>
 
+    <!-- 캡처될 영역 -->
     <div id="capture-area">
         <div class="header-title">CP 왼 른 취향표</div>
         <div class="tables-container">
@@ -285,9 +300,12 @@
                 <div class="grid-container" id="right-grid"></div>
             </div>
         </div>
+        
+        <!-- ★ 이스터 에그 텍스트 쏙! ★ -->
+        <div class="easter-egg">아키토우 화이팅</div>
     </div>
 
-    <!-- ★ 크롭 팝업(모달) 창 - 텍스트 수정 완료! ★ -->
+    <!-- 크롭 팝업(모달) -->
     <div class="modal-overlay" id="cropModal">
         <div class="modal-content">
             <h3 class="modal-title">마우스 휠로 확대/ 축소 가능</h3>
@@ -302,12 +320,10 @@
     </div>
 
     <script>
-        // 그라데이션 및 색상 변경 코드
         function updateSaveButtonColor() {
             const leftColor = getComputedStyle(document.documentElement).getPropertyValue('--left-color').trim();
             const rightColor = getComputedStyle(document.documentElement).getPropertyValue('--right-color').trim();
             document.getElementById('saveBtn').style.background = `linear-gradient(135deg, ${leftColor} 0%, ${rightColor} 100%)`;
-            // 크롭 모달 완료 버튼도 테마에 맞게!
             document.getElementById('applyCropBtn').style.background = `linear-gradient(135deg, ${leftColor} 0%, ${rightColor} 100%)`;
         }
         function changeLeftColor(color) {
@@ -320,11 +336,9 @@
         }
         updateSaveButtonColor();
 
-        // 크롭 관련 변수들
         let cropper = null;
-        let currentCell = null; // 현재 편집 중인 칸 기억하기
+        let currentCell = null; 
 
-        // 칸 만들기
         function createCell() {
             const cell = document.createElement('div');
             cell.className = 'grid-item';
@@ -338,18 +352,15 @@
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = (event) => {
-                            // 모달 열고 이미지 세팅하기
                             currentCell = cell;
                             const image = document.getElementById('cropImage');
                             image.src = event.target.result;
                             document.getElementById('cropModal').style.display = 'flex';
                             
-                            // 혹시 이전 크로퍼가 남아있으면 지워주기
                             if (cropper) {
                                 cropper.destroy();
                             }
                             
-                            // 크로퍼 출동! (무조건 1:1 정사각형으로 세팅)
                             cropper = new Cropper(image, {
                                 aspectRatio: 1 / 1,
                                 viewMode: 1, 
@@ -373,7 +384,6 @@
             return cell;
         }
 
-        // 모달 닫기
         function closeModal() {
             document.getElementById('cropModal').style.display = 'none';
             if (cropper) {
@@ -383,11 +393,9 @@
             currentCell = null;
         }
 
-        // 크롭 완료 후 적용하기
         function applyCrop() {
             if (!cropper) return;
             
-            // 자른 이미지를 고화질 캔버스로 뽑아내기
             const canvas = cropper.getCroppedCanvas({
                 width: 400,
                 height: 400, 
@@ -396,7 +404,6 @@
             });
             
             if (currentCell) {
-                // 뽑아낸 이미지를 배경으로 쏙!
                 currentCell.style.backgroundImage = `url(${canvas.toDataURL('image/jpeg', 0.9)})`;
                 currentCell.classList.add('has-image'); 
             }
@@ -404,7 +411,6 @@
             closeModal(); 
         }
 
-        // 줄 추가/삭제
         function addRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
@@ -423,14 +429,12 @@
                     rightGrid.removeChild(rightGrid.lastChild);
                 }
             } else {
-                alert("최소 1줄은 남겨두어야 해요!");
+                alert("최소 1줄은 남겨주세요");
             }
         }
 
-        // 페이지 열리면 기본 3줄 세팅
         for(let i=0; i<3; i++) addRow();
 
-        // 캡처 저장 기능
         function saveAsImage() {
             const captureArea = document.getElementById('capture-area');
             captureArea.classList.add('exporting-mode'); 
