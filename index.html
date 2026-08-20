@@ -174,18 +174,21 @@
             font-weight: 300;
         }
         .grid-item.has-image::before { display: none; }
+        
+        /* ★ 투명도랑 크기를 확 낮춘 진짜 이스터 에그! ★ */
         .easter-egg {
             position: absolute;
-            bottom: 3%;
-            right: 4%;
-            font-size: clamp(8px, 1.5vw, 12px);
-            color: #ced4da;
-            opacity: 0.8;
+            bottom: 2%;
+            right: 3%;
+            font-size: clamp(7px, 1.2vw, 10px); /* 사이즈를 더 작게! */
+            color: #adb5bd;
+            opacity: 0.15; /* 진짜 흐릿하게! */
             pointer-events: none;
             user-select: none;
             letter-spacing: 1px;
-            font-weight: 500;
+            font-weight: 400; /* 글씨 굵기도 얇게! */
         }
+        
         .modal-overlay {
             display: none;
             position: fixed;
@@ -231,36 +234,22 @@
         .modal-btn-cancel { background: #f1f3f5; color: #495057; }
         .modal-btn-apply { background: #2b2d42; color: white; }
 
-        /* ★ 스마트폰 전용 미니미 사이즈 설정 ★ */
         @media (max-width: 768px) {
             .controls-panel {
                 padding: 15px;
                 gap: 12px;
                 margin-bottom: 20px;
             }
-            .colors-container {
-                gap: 10px;
-            }
+            .colors-container { gap: 10px; }
             .color-picker-group {
                 padding: 6px 10px;
                 font-size: 12px;
                 gap: 6px;
             }
-            .color-swatch {
-                width: 22px; 
-                height: 22px;
-            }
-            .custom-color-btn {
-                font-size: 14px;
-            }
-            .btn-group {
-                gap: 6px;
-            }
-            .btn {
-                padding: 8px 12px;
-                font-size: 12px;
-                border-radius: 10px;
-            }
+            .color-swatch { width: 22px; height: 22px; }
+            .custom-color-btn { font-size: 14px; }
+            .btn-group { gap: 6px; }
+            .btn { padding: 8px 12px; font-size: 12px; border-radius: 10px; }
         }
     </style>
 </head>
@@ -299,6 +288,7 @@
                 <div class="grid-container" id="right-grid"></div>
             </div>
         </div>
+        <!-- 수정된 이스터에그! -->
         <div class="easter-egg">아키토우 화이팅</div>
     </div>
 
