@@ -230,6 +230,38 @@
         }
         .modal-btn-cancel { background: #f1f3f5; color: #495057; }
         .modal-btn-apply { background: #2b2d42; color: white; }
+
+        /* ★ 스마트폰 전용 미니미 사이즈 설정 ★ */
+        @media (max-width: 768px) {
+            .controls-panel {
+                padding: 15px;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .colors-container {
+                gap: 10px;
+            }
+            .color-picker-group {
+                padding: 6px 10px;
+                font-size: 12px;
+                gap: 6px;
+            }
+            .color-swatch {
+                width: 22px; 
+                height: 22px;
+            }
+            .custom-color-btn {
+                font-size: 14px;
+            }
+            .btn-group {
+                gap: 6px;
+            }
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                border-radius: 10px;
+            }
+        }
     </style>
 </head>
 <body>
