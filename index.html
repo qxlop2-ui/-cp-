@@ -9,10 +9,10 @@
     <!-- 캡처 라이브러리 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* 왼/른 각각의 기본 색상 설정 */
+        /* 왼/른 각각의 기본 색상 설정 (요청하신 색상으로 수정 완료!) */
         :root {
-            --left-color: #2b2d42; 
-            --right-color: #2b2d42; 
+            --left-color: #FF7722; 
+            --right-color: #0077DD; 
             --bg-color: #f4f6f8;
         }
 
@@ -35,7 +35,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             margin-bottom: 40px;
             display: flex;
-            flex-direction: column; /* 위아래로 배치 */
+            flex-direction: column;
             gap: 25px;
             align-items: center;
             z-index: 10;
@@ -112,7 +112,6 @@
         .btn-delete { background: #ffe3e3; color: #fa5252; }
         .btn-delete:hover { background: #ffc9c9; }
         
-        /* 저장 버튼은 자바스크립트로 그라데이션이 들어갈 예정! */
         .btn-save {
             color: white;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -143,7 +142,7 @@
             font-weight: 900;
             margin-bottom: 40px;
             text-align: center;
-            color: #2b2d42; /* 제목은 깔끔하게 다크그레이 고정 */
+            color: #2b2d42; 
             letter-spacing: -1px; 
         }
 
@@ -152,7 +151,6 @@
             gap: 40px;
         }
 
-        /* 각각의 표에 맞는 색상을 입히기 위한 변수 세팅 */
         .left-table { --current-theme: var(--left-color); }
         .right-table { --current-theme: var(--right-color); }
 
@@ -179,7 +177,6 @@
             gap: 8px;
         }
         
-        /* 攻め, 受け 한자 부분 스타일 */
         .table-header .jp-text {
             font-size: 22px;
             font-weight: 600;
@@ -221,14 +218,13 @@
 </head>
 <body>
 
-    <!-- MZ 감성 컨트롤 패널 -->
     <div class="controls-panel">
         <div class="colors-container">
             <!-- 왼 컬러 픽 -->
             <div class="color-picker-group">
                 <span>🎨 왼 컬러:</span>
+                <div class="color-swatch" style="background: #FF7722;" onclick="changeLeftColor('#FF7722')"></div>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeLeftColor('#2b2d42')"></div>
-                <div class="color-swatch" style="background: #0077DD;" onclick="changeLeftColor('#0077DD')"></div>
                 <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
                     +<input type="color" onchange="changeLeftColor(this.value)">
                 </label>
@@ -237,8 +233,8 @@
             <!-- 른 컬러 픽 -->
             <div class="color-picker-group">
                 <span>🎨 른 컬러:</span>
+                <div class="color-swatch" style="background: #0077DD;" onclick="changeRightColor('#0077DD')"></div>
                 <div class="color-swatch" style="background: #2b2d42;" onclick="changeRightColor('#2b2d42')"></div>
-                <div class="color-swatch" style="background: #FF7722;" onclick="changeRightColor('#FF7722')"></div>
                 <label class="color-swatch custom-color-btn" title="원하는 색상 고르기">
                     +<input type="color" onchange="changeRightColor(this.value)">
                 </label>
@@ -271,7 +267,7 @@
     </div>
 
     <script>
-        // 버튼 그라데이션 업데이트 함수
+        // 버튼 그라데이션 업데이트
         function updateSaveButtonColor() {
             const leftColor = getComputedStyle(document.documentElement).getPropertyValue('--left-color').trim();
             const rightColor = getComputedStyle(document.documentElement).getPropertyValue('--right-color').trim();
@@ -290,10 +286,8 @@
             updateSaveButtonColor();
         }
 
-        // 초기 버튼 색상 세팅
         updateSaveButtonColor();
 
-        // 칸 만들기 기능
         function createCell() {
             const cell = document.createElement('div');
             cell.className = 'grid-item';
@@ -318,7 +312,6 @@
             return cell;
         }
 
-        // 줄 추가 기능
         function addRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
@@ -327,7 +320,6 @@
             for(let i=0; i<3; i++) rightGrid.appendChild(createCell());
         }
 
-        // 줄 삭제 기능
         function deleteRow() {
             const leftGrid = document.getElementById('left-grid');
             const rightGrid = document.getElementById('right-grid');
@@ -342,12 +334,11 @@
             }
         }
 
-        // 초기 세팅: 3줄 만들기
+        // 기본 3x3
         for(let i=0; i<3; i++) {
             addRow();
         }
 
-        // 고화질 이미지 저장 기능
         function saveAsImage() {
             const captureArea = document.getElementById('capture-area');
             
